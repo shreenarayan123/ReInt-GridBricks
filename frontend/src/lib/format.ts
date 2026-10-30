@@ -13,9 +13,11 @@ export const fmtSignedMw = (v: number | null | undefined) => {
 const ukDate = new Intl.DateTimeFormat("en-GB", {
   timeZone: "Europe/London", weekday: "short", day: "numeric", month: "short",
 });
+const ukShort = new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/London", day: "numeric", month: "short" });
 const ukDateTime = new Intl.DateTimeFormat("en-GB", {
   timeZone: "Europe/London", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit",
 });
 
 export const fmtUkDate = (iso: string) => ukDate.format(new Date(iso));
+export const fmtUkShort = (iso: string) => ukShort.format(new Date(iso));
 export const fmtUkDateTime = (iso: string) => `${ukDateTime.format(new Date(iso))} UK`;
