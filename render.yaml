@@ -1,0 +1,13 @@
+# Render Blueprint: the API runs from the Dockerfile in backend/.
+services:
+  - type: web
+    name: wind-forecast-api
+    runtime: docker
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /health
+    autoDeployTrigger: commit
+    envVars:
+      - key: GRID_CORS_ORIGINS
+        sync: false   # set in the dashboard to your frontend URL, e.g. https://your-app.vercel.app

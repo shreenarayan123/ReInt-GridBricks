@@ -73,8 +73,36 @@ scripts/      ingest.py, check_bias.py, export_openapi.py
 tests/
 ```
 
-## Deployment
+## Configuration
 
-The runtime reads `data/*.csv`, so the deployed bundle needs only `requirements.txt` (no pyarrow).
-pandas + numpy + pyarrow is about 200 MB, close to Vercel's 250 MB function limit; without pyarrow it
-is roughly a third of that.
+Environment variables (see `.env.example`; locally a `.env` file is read, in production set them on the host):
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `GRID_CORS_ORIGINS` | `*` | Comma-separated browser origins allowed to call the API. Set to the deployed frontend URL in production |
+| `GRID_DEFAULT_CUTOFF` | `09:20` | Default decision time |
+| `GRID_ACTUALS_LAG_MINUTES` | `0` | Lag added before an actual counts as visible |
+| `GRID_DATA_DIR` | `./data` | Folder with `forecasts.csv` and `actuals.csv` |
+| `PORT` | `8000` | Port the container listens on (Render sets it) |
+
+## Deployment (Render, Docker)
+
+The runtime reads `data/*.csv` only, so the image needs no pyarrow (the CSVs are committed; parquet is not shipped).
+Dependencies are pinned in `requirements.txt`, and the container runs as a non-root user.
+
+1. Push the repo, then in Render choose **New > Blueprint** and select it: `render.yaml` at the repo root
+   creates the web service (Docker, root directory `backend`, health check `/health`).
+   Or create a Web Service by hand: runtime Docker, root directory `backend`, health check path `/health`.
+2. Set `GRID_CORS_ORIGINS` to your frontend's URL (no path), e.g. `https://your-app.vercel.app`.
+3. Deploy, then check `https://<service>.onrender.com/health` and `/docs`.
+4. Give the frontend that URL as `VITE_API_BASE` (see the frontend README).
+
+On Render's free plan the service sleeps after inactivity, so the first request can take about a minute;
+the frontend shows its loading skeleton and an error with Retry if that request times out.
+
+Local container test:
+
+```
+docker build -t wind-api backend
+docker run --rm -p 8000:8000 -e GRID_CORS_ORIGINS=http://localhost:5173 wind-api
+```
