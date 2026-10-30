@@ -1,4 +1,4 @@
-/** Error = forecast − actual: orange means the forecast was too high, blue too low. */
+/** Error = forecast − actual: red means the forecast was too high, orange too low. */
 export type Side = "high" | "low" | "flat";
 
 /** Rounds to whole MW first, so a displayed "0 MW" is never coloured as an over- or under-forecast. */

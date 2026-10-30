@@ -4,14 +4,11 @@ import type { View } from "../lib/urlState";
 const ICON: Record<View, string> = {
   decision: "M12 20V4M5 11l7-7 7 7",
   overview: "M3 17l5-6 4 4 8-10",
-  hours: "M5 20V10M12 20V4M19 20v-7",
 };
 const ITEMS: { id: View; label: string }[] = [
   { id: "decision", label: "Decision" },
   { id: "overview", label: "Overview" },
-  { id: "hours", label: "Error by hour" },
 ];
-const TITLES = Object.fromEntries(ITEMS.map((i) => [i.id, i.label])) as Record<View, string>;
 
 const Icon = ({ d, size = 18 }: { d: string; size?: number }) => (
   <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="1.8"
@@ -24,8 +21,8 @@ const readCollapsed = () => {
 };
 
 /** Fixed dark sidebar (icons only when collapsed; a drawer on small screens) and a slim top bar. */
-export function AppShell({ view, cutoff, onNavigate, children }: {
-  view: View; cutoff: string; onNavigate: (v: View) => void; children: ReactNode;
+export function AppShell({ view, onNavigate, children }: {
+  view: View; onNavigate: (v: View) => void; children: ReactNode;
 }) {
   const [collapsed, setCollapsed] = useState(readCollapsed);
   const [drawer, setDrawer] = useState(false);
@@ -79,11 +76,7 @@ export function AppShell({ view, cutoff, onNavigate, children }: {
           <button className="icon-btn menu-btn" onClick={() => setDrawer(true)} aria-label="Open menu">
             <Icon d="M4 6h16M4 12h16M4 18h16" />
           </button>
-          <h1>{TITLES[view]}</h1>
-          <span className="chip" title={`Only data known at ${cutoff} UK on the day before delivery is used.`}>
-            <Icon d="M12 7v5l3 2M3 12a9 9 0 1018 0 9 9 0 10-18 0" size={13} />
-            Decision time <strong>{cutoff}</strong>
-          </span>
+          <h1 className="sr-only">{ITEMS.find((i) => i.id === view)?.label}</h1>
         </header>
         {children}
       </div>

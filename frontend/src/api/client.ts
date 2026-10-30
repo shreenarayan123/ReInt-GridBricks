@@ -4,9 +4,9 @@ import type { components } from "./schema";
 export type Decision = components["schemas"]["DecisionResponse"];
 export type Series = components["schemas"]["SeriesResponse"];
 export type Summary = components["schemas"]["Summary"];
-export type ByHour = components["schemas"]["ByHourResponse"];
 
-const BASE = import.meta.env.VITE_API_BASE ?? "/api";
+// Build-time setting; a trailing slash is dropped so paths join cleanly.
+const BASE = (import.meta.env.VITE_API_BASE ?? "/api").replace(/\/+$/, "");
 
 export class ApiError extends Error {
   status: number;
@@ -50,5 +50,3 @@ export const useSeries = (p: Range) =>
 export const useSummary = (p: Range) =>
   useQuery({ queryKey: ["summary", p], queryFn: () => get<Summary>("/v1/errors/summary", p), ...opts });
 
-export const useByHour = (p: Range) =>
-  useQuery({ queryKey: ["byhour", p], queryFn: () => get<ByHour>("/v1/errors/by-hour", p), ...opts });

@@ -1,16 +1,15 @@
-import { useMemo } from "react";
 import { useDecision, type Decision } from "../../api/client";
 import { Boundary, Skeleton } from "../../components/Boundary";
-import { Chart, type ChartOption } from "../../components/Chart";
 import { CutoffInput } from "../../components/CutoffInput";
 import { InfoTip } from "../../components/InfoTip";
 import { Page } from "../../components/Page";
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "../../components/ui/chart";
 import { SlotPicker } from "../../components/SlotPicker";
 import { fmtMw, fmtSignedMw, fmtUkDate, fmtUkDateTime, fmtUkShort } from "../../lib/format";
 import { bufferSentence, SMALL_SAMPLE } from "../../lib/insights";
 import { errorSide, SIDE_LABEL } from "../../lib/sign";
 import { previousDayVisible } from "../../lib/stats";
-import { chartColors } from "../../lib/theme";
+import { Bar, BarChart, CartesianGrid, Cell, ReferenceLine, XAxis, YAxis } from "recharts";
 import type { UrlState } from "../../lib/urlState";
 
 type Props = { state: UrlState; update: (p: Partial<UrlState>) => void };
@@ -58,7 +57,6 @@ function DecisionSkeleton() {
 function Result({ d, state }: { d: Decision; state: UrlState }) {
   const n = d.history_summary.n;
   const hidden = !previousDayVisible(state.cutoff, state.slot);
-  const option = useMemo(() => historyOption(d), [d]);
   const sentence = bufferSentence(d.history_summary.p90_abs_mw);
 
   return (
@@ -98,15 +96,16 @@ function Result({ d, state }: { d: Decision; state: UrlState }) {
               </InfoTip>
             )}
           </h2>
-          <span className="legend">
-            <i className="dot dot-over" /> forecast too high <i className="dot dot-under" /> too low
+          <span className="flex items-center gap-3 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1.5"><i className="h-2 w-2 rounded-[2px] bg-[var(--over)]" />forecast too high</span>
+            <span className="flex items-center gap-1.5"><i className="h-2 w-2 rounded-[2px] bg-[var(--under)]" />too low</span>
           </span>
         </div>
         {n === 0 ? (
           <div className="state">No history to show.</div>
         ) : (
           <div className="chart-box">
-            <Chart option={option} label="Forecast error by day for the selected slot" />
+            <HistoryChart d={d} />
           </div>
         )}
       </section>
@@ -114,29 +113,38 @@ function Result({ d, state }: { d: Decision; state: UrlState }) {
   );
 }
 
-function historyOption(d: Decision): ChartOption {
-  const c = chartColors();
-  const sideColor = (mw: number) => (errorSide(mw) === "low" ? c.under : c.over);
-  return {
-    grid: { left: 56, right: 12, top: 12, bottom: 24 },
-    tooltip: {
-      trigger: "axis",
-      axisPointer: { type: "shadow" },
-      formatter: (params: unknown) => {
-        const first = Array.isArray(params) ? params[0] : params;
-        const h = d.history[(first as { dataIndex: number }).dataIndex];
-        const side = errorSide(h.error_mw);
-        return `<b>${fmtUkDate(h.start_time)}</b><br/>Forecast: ${fmtMw(h.forecast_mw)}<br/>Actual: ${fmtMw(h.actual_mw)}`
-          + `<br/>Error: <b>${fmtSignedMw(h.error_mw)}</b>${side === "flat" ? "" : ` (${SIDE_LABEL[side]})`}`;
-      },
-    },
-    xAxis: { type: "category", data: d.history.map((h) => fmtUkShort(h.start_time)), axisLabel: { color: c.text }, axisTick: { show: false } },
-    yAxis: { type: "value", axisLabel: { color: c.text, formatter: (v: number) => v.toLocaleString("en-GB") }, splitLine: { lineStyle: { color: c.grid } } },
-    series: [{
-      type: "bar",
-      barMaxWidth: 36,
-      data: d.history.map((h) => ({ value: Math.round(h.error_mw), itemStyle: { color: sideColor(h.error_mw) } })),
-      markLine: { silent: true, symbol: "none", data: [{ yAxis: 0 }], label: { show: false }, lineStyle: { color: c.neutral } },
-    }],
-  };
+const historyConfig = { error: { label: "Error" } } satisfies ChartConfig;
+const sideColor = (mw: number) => (errorSide(mw) === "low" ? "var(--under)" : "var(--over)");
+
+/** shadcn bar chart: one bar per day, red when the forecast was too high, orange when too low. */
+function HistoryChart({ d }: { d: Decision }) {
+  const data = d.history.map((h) => ({ ...h, label: fmtUkShort(h.start_time), error: Math.round(h.error_mw) }));
+  return (
+    <ChartContainer config={historyConfig} label="Forecast error by day for the selected slot">
+      <BarChart data={data} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
+        <CartesianGrid vertical={false} />
+        <XAxis dataKey="label" tickLine={false} axisLine={false} interval="preserveStartEnd" minTickGap={8} />
+        <YAxis width={56} tickLine={false} axisLine={false} tickFormatter={(v: number) => v.toLocaleString("en-GB")} />
+        <ReferenceLine y={0} />
+        <ChartTooltip cursor content={
+          <ChartTooltipContent
+            labelFormatter={(_: unknown, items) => fmtUkDate(items[0].payload.start_time)}
+            formatter={(_v, _k, item) => {
+              const h = item.payload as Decision["history"][number];
+              const side = errorSide(h.error_mw);
+              return (
+                <div className="grid gap-0.5">
+                  <div>Forecast: {fmtMw(h.forecast_mw)}</div>
+                  <div>Actual: {fmtMw(h.actual_mw)}</div>
+                  <div>Error: <b>{fmtSignedMw(h.error_mw)}</b>{side === "flat" ? "" : ` (${SIDE_LABEL[side]})`}</div>
+                </div>
+              );
+            }} />
+        } />
+        <Bar dataKey="error" maxBarSize={36} isAnimationActive={false}>
+          {data.map((h) => <Cell key={h.start_time} fill={sideColor(h.error_mw)} />)}
+        </Bar>
+      </BarChart>
+    </ChartContainer>
+  );
 }

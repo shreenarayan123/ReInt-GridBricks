@@ -48,7 +48,11 @@ export function OverviewPage({ state, update }: Props) {
       <section className="card card-fill" aria-label="Actual vs forecast">
         <div className="card-h">
           <h2>Actual vs forecast</h2>
-          <span className="hint">Scroll or drag the slider to zoom</span>
+          <span className="flex items-center gap-3 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1.5"><i className="h-0.5 w-3.5 bg-[var(--forecast)]" />Forecast</span>
+            <span className="flex items-center gap-1.5"><i className="h-0.5 w-3.5 bg-[var(--actual)]" />Actual</span>
+            <span>Drag the slider to zoom</span>
+          </span>
         </div>
         <Boundary query={series} fill skeleton={<Skeleton className="sk-chart" />}
           empty={(d) => (d.points.length === 0 ? "No forecasts in this range." : null)}>

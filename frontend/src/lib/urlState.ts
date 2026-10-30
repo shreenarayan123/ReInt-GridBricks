@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
-export type View = "decision" | "overview" | "hours";
-export const VIEWS: View[] = ["decision", "overview", "hours"];
+export type View = "decision" | "overview";
+export const VIEWS: View[] = ["decision", "overview"];
 
 export interface UrlState {
   view: View;
@@ -22,8 +22,8 @@ export const DEFAULTS: UrlState = {
 const isDate = (s: string | null): s is string => !!s && /^\d{4}-\d{2}-\d{2}$/.test(s);
 const isTime = (s: string | null): s is string => !!s && /^([01]\d|2[0-3]):[0-5]\d$/.test(s);
 
-// Old links keep working: "evaluation" and "compare" now live on the overview, "profile" became "hours".
-const LEGACY: Record<string, View> = { evaluation: "overview", compare: "overview", profile: "hours" };
+// Old links keep working: "evaluation" and "compare" now live on the overview, retired pages fall back to the decision view.
+const LEGACY: Record<string, View> = { evaluation: "overview", compare: "overview" };
 const parseView = (v: string | null): View =>
   (v != null && LEGACY[v]) || VIEWS.find((x) => x === v) || "decision";
 

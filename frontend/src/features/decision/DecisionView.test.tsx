@@ -5,7 +5,10 @@ import { CutoffInput } from "../../components/CutoffInput";
 import { DEFAULTS } from "../../lib/urlState";
 import { DecisionView } from "./DecisionView";
 
-vi.mock("../../components/Chart", () => ({ Chart: () => <div data-testid="chart" /> }));
+vi.mock("../../components/ui/chart", async (orig) => ({
+  ...(await orig<typeof import("../../components/ui/chart")>()),
+  ChartContainer: () => <div data-testid="chart" />,
+}));
 
 // Real figures for delivery 14 Jan 12:00, decided 13 Jan 09:20.
 const DECISION = {

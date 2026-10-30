@@ -12,10 +12,14 @@
     "gen:api": "openapi-typescript -o src/api/schema.d.ts"
   },
   "dependencies": {
+    "@tailwindcss/vite": "4.3.3",
     "@tanstack/react-query": "5.105.0",
-    "echarts": "6.1.0",
+    "clsx": "2.1.1",
     "react": "19.3.1",
-    "react-dom": "19.3.1"
+    "react-dom": "19.3.1",
+    "recharts": "3.10.1",
+    "tailwind-merge": "3.7.0",
+    "tailwindcss": "4.3.3"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "7.0.1",

@@ -4,7 +4,7 @@
   font-variant-numeric: tabular-nums;
 
   /* surfaces */
-  --bg: #f3f5f7;
+  --bg: #ffffff;
   --card: #ffffff;
   --line: #e2e8ee;
   --fg: #000000;
@@ -14,12 +14,16 @@
   --accent: #0f766e;
   --accent-soft: #e6f4f2;
 
-  /* direction of the forecast error: orange = forecast too high, blue = too low */
-  --over: #c2410c;
-  --over-soft: #fff1e8;
-  --under: #1d4ed8;
-  --under-soft: #e8efff;
+  /* direction of the forecast error (Google red / orange): red = forecast too high, orange = too low */
+  --over: #ea4335;
+  --over-soft: #fdecea;
+  --under: #fa7b17;
+  --under-soft: #fef0e3;
   --neutral: #64748b;
+
+  /* series colours on the Overview line chart (Google blue and green) */
+  --forecast: #4285f4;
+  --actual: #34a853;
   --danger: #b91c1c;
 
   /* sidebar */

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { fmtMw, fmtSignedMw } from "./format";
-import { bufferSentence, hourTakeaway, maeDifference } from "./insights";
+import { bufferSentence, maeDifference } from "./insights";
 import { errorSide, SIDE_TOKEN } from "./sign";
 import { previousDayVisible } from "./stats";
 import { DEFAULTS, parseUrlState, toSearch } from "./urlState";
@@ -34,7 +34,7 @@ describe("buffer sentence", () => {
 });
 
 describe("sign and colour", () => {
-  it("positive error is too high (orange), negative too low (blue)", () => {
+  it("positive error is too high (red), negative too low (orange)", () => {
     expect(errorSide(5353)).toBe("high");
     expect(errorSide(-59)).toBe("low");
     expect(SIDE_TOKEN[errorSide(5353)]).toBe("--over");
@@ -47,21 +47,6 @@ describe("sign and colour", () => {
   });
 });
 
-describe("hourTakeaway", () => {
-  it("summarises direction and best/worst hour", () => {
-    const t = hourTakeaway([
-      { hour: 0, bias_mw: 100, mae_mw: 1500 },
-      { hour: 1, bias_mw: 300, mae_mw: 2500 },
-      { hour: 2, bias_mw: -50, mae_mw: 900 },
-    ]);
-    expect(t).toBe("Forecast was too high in 2 and too low in 1 of 3 hours; error is largest at 01:00 (MAE 2,500 MW) and smallest at 02:00 (900 MW).");
-  });
-  it("says too high when every hour is positive, and handles no data", () => {
-    expect(hourTakeaway([{ hour: 5, bias_mw: 10, mae_mw: 20 }])).toMatch(/^Forecast was too high in 1 of 1 hours/);
-    expect(hourTakeaway([])).toBeNull();
-  });
-});
-
 describe("maeDifference", () => {
   it("is positive when the later decision time is more accurate", () => {
     expect(maeDifference(2022, 1672)).toEqual({ better: 350, text: "−350 MW" });
@@ -71,13 +56,13 @@ describe("maeDifference", () => {
 
 describe("url state", () => {
   it("round-trips", () => {
-    const s = { ...DEFAULTS, view: "hours" as const, cutoff: "10:00", days: 3 };
+    const s = { ...DEFAULTS, view: "overview" as const, cutoff: "10:00", days: 3 };
     expect(parseUrlState(toSearch(s))).toEqual(s);
   });
-  it("maps legacy views: evaluation and compare to overview, profile to hours", () => {
+  it("maps legacy views: evaluation and compare to overview, retired pages to decision", () => {
     expect(parseUrlState("?view=evaluation").view).toBe("overview");
     expect(parseUrlState("?view=compare").view).toBe("overview");
-    expect(parseUrlState("?view=profile").view).toBe("hours");
+    expect(parseUrlState("?view=profile").view).toBe("decision");
   });
   it("defaults to 14 history days", () => {
     expect(DEFAULTS.days).toBe(14);
