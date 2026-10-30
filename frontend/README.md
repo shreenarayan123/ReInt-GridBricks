@@ -1,6 +1,6 @@
 # Wind forecast error tool: frontend
 
-React + TypeScript + Vite, TanStack Query, ECharts. Talks to the wind forecast error API (see the backend repo).
+React + TypeScript + Vite, TanStack Query, shadcn/ui charts (Recharts). Talks to the wind forecast error API (see the backend repo).
 
 ## Pages
 
