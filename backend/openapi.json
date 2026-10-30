@@ -1,0 +1,641 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Wind forecast error tool",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/v1/series": {
+      "get": {
+        "summary": "Series",
+        "operationId": "series_v1_series_get",
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "Start"
+            }
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "End"
+            }
+          },
+          {
+            "name": "cutoff",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "time",
+              "description": "Decision time of day (UTC) on the day before delivery, HH:MM",
+              "default": "09:20:00",
+              "title": "Cutoff"
+            },
+            "description": "Decision time of day (UTC) on the day before delivery, HH:MM"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeriesResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/decision": {
+      "get": {
+        "summary": "Decision",
+        "operationId": "decision_v1_decision_get",
+        "parameters": [
+          {
+            "name": "delivery_date",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "Delivery Date"
+            }
+          },
+          {
+            "name": "slot",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "time",
+              "title": "Slot"
+            }
+          },
+          {
+            "name": "cutoff",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "time",
+              "description": "Decision time of day (UTC) on the day before delivery, HH:MM",
+              "default": "09:20:00",
+              "title": "Cutoff"
+            },
+            "description": "Decision time of day (UTC) on the day before delivery, HH:MM"
+          },
+          {
+            "name": "days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 30,
+              "minimum": 1,
+              "default": 7,
+              "title": "Days"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecisionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/errors/summary": {
+      "get": {
+        "summary": "Errors Summary",
+        "operationId": "errors_summary_v1_errors_summary_get",
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "Start"
+            }
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "End"
+            }
+          },
+          {
+            "name": "cutoff",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "time",
+              "description": "Decision time of day (UTC) on the day before delivery, HH:MM",
+              "default": "09:20:00",
+              "title": "Cutoff"
+            },
+            "description": "Decision time of day (UTC) on the day before delivery, HH:MM"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Summary"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/errors/by-hour": {
+      "get": {
+        "summary": "Errors By Hour",
+        "operationId": "errors_by_hour_v1_errors_by_hour_get",
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "Start"
+            }
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "End"
+            }
+          },
+          {
+            "name": "cutoff",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "time",
+              "description": "Decision time of day (UTC) on the day before delivery, HH:MM",
+              "default": "09:20:00",
+              "title": "Cutoff"
+            },
+            "description": "Decision time of day (UTC) on the day before delivery, HH:MM"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ByHourResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ByHourResponse": {
+        "properties": {
+          "cutoff": {
+            "type": "string",
+            "title": "Cutoff"
+          },
+          "hours": {
+            "items": {
+              "$ref": "#/components/schemas/HourSummary"
+            },
+            "type": "array",
+            "title": "Hours"
+          }
+        },
+        "type": "object",
+        "required": [
+          "cutoff",
+          "hours"
+        ],
+        "title": "ByHourResponse"
+      },
+      "DecisionResponse": {
+        "properties": {
+          "delivery_date": {
+            "type": "string",
+            "title": "Delivery Date"
+          },
+          "slot": {
+            "type": "string",
+            "title": "Slot"
+          },
+          "cutoff": {
+            "type": "string",
+            "title": "Cutoff"
+          },
+          "decision_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Decision Time"
+          },
+          "forecast_mw": {
+            "type": "number",
+            "title": "Forecast Mw"
+          },
+          "forecast_publish_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Forecast Publish Time"
+          },
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/HistoryPoint"
+            },
+            "type": "array",
+            "title": "History"
+          },
+          "history_summary": {
+            "$ref": "#/components/schemas/Summary"
+          }
+        },
+        "type": "object",
+        "required": [
+          "delivery_date",
+          "slot",
+          "cutoff",
+          "decision_time",
+          "forecast_mw",
+          "forecast_publish_time",
+          "history",
+          "history_summary"
+        ],
+        "title": "DecisionResponse"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HistoryPoint": {
+        "properties": {
+          "start_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start Time"
+          },
+          "forecast_mw": {
+            "type": "number",
+            "title": "Forecast Mw"
+          },
+          "actual_mw": {
+            "type": "number",
+            "title": "Actual Mw"
+          },
+          "error_mw": {
+            "type": "number",
+            "title": "Error Mw"
+          }
+        },
+        "type": "object",
+        "required": [
+          "start_time",
+          "forecast_mw",
+          "actual_mw",
+          "error_mw"
+        ],
+        "title": "HistoryPoint"
+      },
+      "HourSummary": {
+        "properties": {
+          "n": {
+            "type": "integer",
+            "title": "N"
+          },
+          "bias_mw": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bias Mw"
+          },
+          "mae_mw": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mae Mw"
+          },
+          "rmse_mw": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rmse Mw"
+          },
+          "p90_abs_mw": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P90 Abs Mw"
+          },
+          "hour": {
+            "type": "integer",
+            "title": "Hour"
+          }
+        },
+        "type": "object",
+        "required": [
+          "n",
+          "hour"
+        ],
+        "title": "HourSummary"
+      },
+      "SeriesPoint": {
+        "properties": {
+          "start_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start Time"
+          },
+          "forecast_mw": {
+            "type": "number",
+            "title": "Forecast Mw"
+          },
+          "forecast_publish_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Forecast Publish Time"
+          },
+          "decision_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Decision Time"
+          },
+          "actual_mw": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actual Mw"
+          },
+          "error_mw": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Mw"
+          }
+        },
+        "type": "object",
+        "required": [
+          "start_time",
+          "forecast_mw",
+          "forecast_publish_time",
+          "decision_time"
+        ],
+        "title": "SeriesPoint"
+      },
+      "SeriesResponse": {
+        "properties": {
+          "cutoff": {
+            "type": "string",
+            "title": "Cutoff"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/SeriesPoint"
+            },
+            "type": "array",
+            "title": "Points"
+          }
+        },
+        "type": "object",
+        "required": [
+          "cutoff",
+          "points"
+        ],
+        "title": "SeriesResponse"
+      },
+      "Summary": {
+        "properties": {
+          "n": {
+            "type": "integer",
+            "title": "N"
+          },
+          "bias_mw": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bias Mw"
+          },
+          "mae_mw": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mae Mw"
+          },
+          "rmse_mw": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rmse Mw"
+          },
+          "p90_abs_mw": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P90 Abs Mw"
+          }
+        },
+        "type": "object",
+        "required": [
+          "n"
+        ],
+        "title": "Summary"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
