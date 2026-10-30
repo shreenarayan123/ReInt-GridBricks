@@ -6,6 +6,9 @@ recently been for the same slot, so the buffer can be chosen from evidence.
 
 Data: Elexon **WINDFOR** (wind forecast) against **FUELHH** wind (actual generation), GB, January 2026.
 
+## Live
+[Frontend](https://re-int-grid-bricks.vercel.app/).
+
 > Built using [Claude Code](https://claude.com/claude-code).
 
 ## What it does
