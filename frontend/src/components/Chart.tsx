@@ -13,8 +13,8 @@ echarts.use([
 
 export type ChartOption = echarts.EChartsCoreOption;
 
-/** Thin ECharts wrapper: one instance per mount, option updates in place, resizes with its box. */
-export function Chart({ option, height = 300, label }: { option: ChartOption; height?: number; label: string }) {
+/** Thin ECharts wrapper: one instance per mount, option updates in place, fills and follows its parent. */
+export function Chart({ option, label }: { option: ChartOption; label: string }) {
   const el = useRef<HTMLDivElement>(null);
   const chart = useRef<echarts.ECharts | null>(null);
 
@@ -34,5 +34,5 @@ export function Chart({ option, height = 300, label }: { option: ChartOption; he
     chart.current?.setOption(option, { notMerge: true });
   }, [option]);
 
-  return <div ref={el} role="img" aria-label={label} style={{ width: "100%", height }} />;
+  return <div ref={el} role="img" aria-label={label} className="chart" />;
 }
