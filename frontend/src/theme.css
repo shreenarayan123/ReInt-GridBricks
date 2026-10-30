@@ -1,0 +1,50 @@
+/* Design tokens: the only place colours, type scale and spacing are defined. */
+:root {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-variant-numeric: tabular-nums;
+
+  /* surfaces */
+  --bg: #f3f5f7;
+  --card: #ffffff;
+  --line: #e2e8ee;
+  --fg: #000000;
+  --muted: #5a6b7b;
+
+  /* the one accent */
+  --accent: #0f766e;
+  --accent-soft: #e6f4f2;
+
+  /* direction of the forecast error: orange = forecast too high, blue = too low */
+  --over: #c2410c;
+  --over-soft: #fff1e8;
+  --under: #1d4ed8;
+  --under-soft: #e8efff;
+  --neutral: #64748b;
+  --danger: #b91c1c;
+
+  /* sidebar */
+  --side-bg: #ffffff;
+  --side-fg: #000000;
+  --side-muted: #5a6b7b;
+  --side-hover: #eef2f5;
+  --side-active: var(--accent); /* same green as the logo */
+  --tip-bg: #0e1a20;
+
+  /* type */
+  --fs-xs: 12px;
+  --fs-sm: 13px;
+  --fs-md: 14px;
+  --fs-lg: 17px;
+  --fs-kpi: 26px;
+  --fs-big: 38px;
+
+  /* space and shape */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --radius: 8px;
+  --side-w: 236px;
+  --side-w-collapsed: 56px;
+  --topbar-h: 52px;
+}
