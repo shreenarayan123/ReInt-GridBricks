@@ -4,11 +4,12 @@ React + TypeScript + Vite, TanStack Query, ECharts. Talks to the wind forecast e
 
 ## Pages
 
-- **Decision**: forecast for one delivery slot, recent error history, and a buffer suggestion.
-- **Overview**: bias / MAE / RMSE / P90 and a zoomable actual-vs-forecast chart.
-- **Error profile**: error by hour of day and the error distribution.
-- **Cutoff comparison**: two decision times side by side (e.g. 09:20 vs 19:00).
-- **Data notes**: how decision time works and why the sign of the bias depends on the actuals used.
+- **Decision**: forecast for one delivery slot, a buffer sentence ("error stayed within X MW on 90% of days") and a daily error chart.
+- **Overview**: Bias, MAE and P90 cards, a MAE comparison of two decision times (09:20 vs 19:00), and a zoomable actual-vs-forecast chart.
+- **Error by hour**: bias and MAE by hour of day, with a one-line takeaway computed from the data.
+  The bias caveat (it depends on which actuals you use) is an info tooltip beside Bias.
+
+Colours live in `src/theme.css` (one teal accent; orange = forecast too high, blue = too low).
 
 All controls live in the URL query string, so any view can be shared as a link. Cutoff changes are
 debounced and previous data stays on screen while new data loads.
