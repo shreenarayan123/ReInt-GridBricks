@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
-export type View = "decision" | "overview" | "profile" | "compare" | "notes";
-export const VIEWS: View[] = ["decision", "overview", "profile", "compare", "notes"];
+export type View = "decision" | "overview" | "hours";
+export const VIEWS: View[] = ["decision", "overview", "hours"];
 
 export interface UrlState {
   view: View;
@@ -11,20 +11,21 @@ export interface UrlState {
   days: number;     // history days
   start: string;    // evaluation range
   end: string;
-  compare: string;  // second cutoff for the comparison panel
+  compare: string;  // second cutoff for the overview comparison card
 }
 
 export const DEFAULTS: UrlState = {
-  view: "decision", date: "2026-01-14", slot: "12:00", cutoff: "09:20", days: 7,
+  view: "decision", date: "2026-01-14", slot: "12:00", cutoff: "09:20", days: 14,
   start: "2026-01-02", end: "2026-02-01", compare: "19:00",
 };
 
 const isDate = (s: string | null): s is string => !!s && /^\d{4}-\d{2}-\d{2}$/.test(s);
 const isTime = (s: string | null): s is string => !!s && /^([01]\d|2[0-3]):[0-5]\d$/.test(s);
 
-// "evaluation" was the single evaluation page before it was split into tabs; keep old links working.
+// Old links keep working: "evaluation" and "compare" now live on the overview, "profile" became "hours".
+const LEGACY: Record<string, View> = { evaluation: "overview", compare: "overview", profile: "hours" };
 const parseView = (v: string | null): View =>
-  v === "evaluation" ? "overview" : VIEWS.find((x) => x === v) ?? "decision";
+  (v != null && LEGACY[v]) || VIEWS.find((x) => x === v) || "decision";
 
 /** Invalid or missing values fall back to defaults, so a bad link never breaks the page. */
 export function parseUrlState(search: string): UrlState {
