@@ -37,21 +37,28 @@ const mockFetch = (status: number, body: unknown) =>
 afterEach(() => vi.unstubAllGlobals());
 
 describe("DecisionView", () => {
-  it("shows the forecast, buffer with sample size, and the not-visible note", async () => {
+  it("shows the forecast, buffer sentence with sample size, and the not-visible tooltip", async () => {
     mockFetch(200, DECISION);
     renderView();
     expect(await screen.findByText("6,821 MW")).toBeInTheDocument();
-    expect(screen.getByText(/stayed within 4,974 MW on 90% of days/)).toBeInTheDocument();
-    expect(screen.getByText(/Sample size: 4 days/)).toBeInTheDocument();
-    expect(screen.getByText(/small sample/)).toBeInTheDocument();
-    expect(screen.getByRole("note")).toHaveTextContent("Previous day is not visible at a 09:20 cutoff");
-    expect(screen.getByText("+5,353 MW")).toBeInTheDocument();
+    expect(screen.getByText("Error stayed within 4,974 MW on 90% of days.")).toBeInTheDocument();
+    expect(screen.getByText("n = 4 days")).toBeInTheDocument();
+    expect(screen.getByRole("tooltip")).toHaveTextContent("Previous day is not visible at a 09:20 cutoff");
+    expect(screen.queryByRole("table")).not.toBeInTheDocument();
+    expect(screen.queryByText(/RMSE/)).not.toBeInTheDocument();
+  });
+
+  it("offers a retry when the request fails", { timeout: 10000 }, async () => {
+    mockFetch(500, { detail: "boom" });
+    renderView();
+    expect(await screen.findByRole("alert", {}, { timeout: 5000 })).toHaveTextContent("boom");
+    expect(screen.getByRole("button", { name: "Retry" })).toBeInTheDocument();
   });
 
   it("shows a message when no forecast exists for the slot", async () => {
     mockFetch(404, { detail: "no forecast published by the decision time for that slot" });
     renderView();
-    expect(await screen.findByRole("alert")).toHaveTextContent("no forecast published");
+    expect(await screen.findByText(/no forecast published/)).toBeInTheDocument();
   });
 });
 
